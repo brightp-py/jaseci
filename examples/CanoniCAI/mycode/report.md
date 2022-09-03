@@ -16,5 +16,5 @@ and everything works now!
 
 The bible was very informative on how to install everything needed for this 
 walkthrough. I liked the chill, conversation vibe it had at times, good fun. 
-There were quite a few typoes, though. Maybe I'll practice my forking skills
+There were quite a few typos, though. Maybe I'll practice my forking skills
 by going through the original latex file for that document.
