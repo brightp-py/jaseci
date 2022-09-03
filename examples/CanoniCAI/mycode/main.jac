@@ -31,6 +31,7 @@ graph faq {
 }
 
 walker ask {
+    can use.qa_classify;
     has question;
     root {
         question = std.input(">");
