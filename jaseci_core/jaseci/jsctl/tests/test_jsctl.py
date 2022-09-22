@@ -5,7 +5,7 @@ from click.testing import CliRunner
 import json
 
 
-class jsctl_test(TestCaseHelper, TestCase):
+class JsctlTest(TestCaseHelper, TestCase):
     """Unit tests for Jac language"""
 
     def setUp(self):
@@ -29,7 +29,7 @@ class jsctl_test(TestCaseHelper, TestCase):
         return ret.split("\n")
 
     def tearDown(self):
-        jsctl.session["master"]._h.clear_mem_cache()
+        jsctl.session["master"]._h.clear_cache()
         super().tearDown()
 
     def test_jsctl_extract_tree(self):
@@ -129,8 +129,9 @@ class jsctl_test(TestCaseHelper, TestCase):
         self.call(
             "sentinel register jaseci/jsctl/tests/zsb.jac -name zsb -set_active true"
         )
-        self.call("config set CONFIG_EXAMPLE -value TEST -do_check False")
+        self.call('config set CONFIG_EXAMPLE -value "TEST" -do_check False')
         self.call("config set APPLE -value Grape2 -do_check False")
+        self.call("config set APPLE_JSON -value '{\"test\":true}' -do_check False")
         self.call('config set "Banana" -value "Grape" -do_check False')
         self.call('config set "Pear" -value "Banana" -do_check False')
         r = self.call("config get APPLE -do_check False")
@@ -282,6 +283,16 @@ class jsctl_test(TestCaseHelper, TestCase):
             self.assertFalse(os.path.exists("jaseci/jsctl/tests/teststest.jir"))
         self.call("jac build jaseci/jsctl/tests/teststest.jac")
         self.assertGreater(os.path.getsize("jaseci/jsctl/tests/teststest.jir"), 50000)
+
+    def test_jsctl_jac_build_with_action(self):
+        import os
+
+        if os.path.exists("jaseci/jsctl/tests/withaction.jir"):
+            os.remove("jaseci/jsctl/tests/withaction.jir")
+            self.assertFalse(os.path.exists("jaseci/jsctl/tests/withaction.jir"))
+        self.call("jac build jaseci/jsctl/tests/withaction.jac")
+        self.assertGreater(os.path.getsize("jaseci/jsctl/tests/withaction.jir"), 1000)
+        os.remove("jaseci/jsctl/tests/withaction.jir")
 
     def test_jsctl_jac_test(self):
         r = self.call_split("jac test jaseci/jsctl/tests/teststest.jac")

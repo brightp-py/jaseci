@@ -4,13 +4,13 @@ Edge class for Jaseci
 Each edge has an id, name, timestamp, the from node at the element of the edge
 and the to node it is pointing to.
 """
-from jaseci.element.element import element
-from jaseci.element.obj_mixins import anchored
+from jaseci.element.element import Element
+from jaseci.element.obj_mixins import Anchored
 from jaseci.utils.utils import logger
 import uuid
 
 
-class edge(element, anchored):
+class Edge(Element, Anchored):
     """Edge class for Jaseci"""
 
     def __init__(self, from_node=None, to_node=None, *args, **kwargs):
@@ -18,8 +18,8 @@ class edge(element, anchored):
         self.to_node_id = None
         self.bidirected: bool = False
         self.context = {}
-        anchored.__init__(self)
-        element.__init__(self, *args, **kwargs)
+        Anchored.__init__(self)
+        Element.__init__(self, *args, **kwargs)
         if from_node:
             self.set_from_node(from_node)
         if to_node:
@@ -149,7 +149,7 @@ class edge(element, anchored):
             base.edge_ids.remove_obj(self)
         if target and self.jid in target.edge_ids:
             target.edge_ids.remove_obj(self)
-        element.destroy(self)
+        Element.destroy(self)
 
     def dot_str(self, node_map=None, edge_map=None, detailed=False):
         """
@@ -170,16 +170,19 @@ class edge(element, anchored):
             if node_map is None
             else node_map.index(self.to_node().jid)
         )
-        dstr = f'"n{from_name}" -> "n{to_name}" '
+        dstr = f'"n{from_name}" -> "n{to_name}" [ '
 
-        dstr += f'[ id="{uuid.UUID(self.jid).hex}"'
+        if detailed:
+            dstr += f'id="{uuid.UUID(self.jid).hex}", '
+
         label = ""
         if edge_map:
             label = f"e{edge_map.index(self.jid)}"
         if self.name != "generic":
             label += f":{self.name}"
-        if label:
-            dstr += f', label="{label}"'
+
+        dstr += f'label="{label}"'
+
         if self.bidirected:
             dstr += ', dir="both"'
 
